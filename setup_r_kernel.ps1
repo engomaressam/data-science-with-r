@@ -24,9 +24,9 @@ $kernelContent = @"
 }
 "@
 
-# Write kernel.json file
+# Write kernel.json file with proper encoding (no BOM)
 Write-Host "Creating kernel.json file: $kernelJson"
-$kernelContent | Out-File -FilePath $kernelJson -Encoding UTF8
+[System.IO.File]::WriteAllText($kernelJson, $kernelContent, [System.Text.UTF8Encoding]::new($false))
 
 Write-Host "R kernel has been manually registered with Jupyter!"
 Write-Host "You should now see 'R' as an option when creating a new notebook."
