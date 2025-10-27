@@ -1,0 +1,16 @@
+{
+  "name": "project3-shiny-dashboard",
+  "version": "1.0.0",
+  "description": "This is a Shiny dashboard application that explores census data to help identify demographics for targeted advertising. The application allows users to filter data by country and visualize various demographic information through interactive plots.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "puppeteer": "24.26.1"
+  }
+}
