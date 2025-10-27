@@ -1,0 +1,239 @@
+---
+title: "Census Data Dashboard with Shiny"
+author: "Data Science with R - Final Project"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# Project Overview
+
+This project creates an interactive Shiny dashboard to explore census data for targeting advertising demographics. The dashboard implements 7 tasks with various UI components and server-side logic for data visualization.
+
+## Required Libraries
+
+```{r libraries}
+library(shiny)
+library(tidyverse)
+library(ggplot2)
+```
+
+## Data Loading and Exploration
+
+```{r data-loading}
+# Load the census data
+adult_data <- read.csv("adult.csv", stringsAsFactors = FALSE)
+
+# Display basic information about the dataset
+cat("Dataset dimensions:", dim(adult_data), "\n")
+cat("Column names:", paste(names(adult_data), collapse = ", "), "\n")
+
+# Show first few rows
+head(adult_data)
+```
+
+```{r data-summary}
+# Summary statistics
+summary(adult_data)
+
+# Check unique countries
+unique_countries <- unique(adult_data$NATIVE_COUNTRY)
+cat("Number of unique countries:", length(unique_countries), "\n")
+cat("Countries:", paste(unique_countries, collapse = ", "))
+```
+
+# Task Implementation
+
+## Task 1: Application Title (1 pt)
+
+The application includes a title panel with "Census Data Dashboard".
+
+```{r task1-code, eval=FALSE}
+# In ui.R
+titlePanel("Census Data Dashboard")
+```
+
+## Task 2: Country Selection (2 pts)
+
+A dropdown menu allows users to select different countries from the dataset.
+
+```{r task2-code, eval=FALSE}
+# In ui.R
+fluidRow(
+  column(12,
+    selectInput("country", "Select Country:",
+                choices = c("United-States", "Mexico", "Philippines", 
+                           "Germany", "Puerto-Rico", "Canada", "El-Salvador",
+                           "India", "Cuba", "England", "Jamaica", "South",
+                           "China", "Italy", "Dominican-Republic", "Vietnam",
+                           "Guatemala", "Japan", "Poland", "Columbia",
+                           "Taiwan", "Haiti", "Iran", "Portugal", "Nicaragua",
+                           "Peru", "France", "Greece", "Ecuador", "Ireland",
+                           "Hong", "Cambodia", "Trinadad&Tobago", "Laos",
+                           "Thailand", "Yugoslavia", "Outlying-US(Guam-USVI-etc)",
+                           "Hungary", "Honduras", "Scotland", "Holand-Netherlands"),
+                selected = "United-States")
+  )
+)
+```
+
+## Task 3: Continuous Variables Plotting (2 pts)
+
+Radio buttons for selecting continuous variables (Age, Hours per Week) and plot types (Histogram, Boxplot).
+
+```{r task3-code, eval=FALSE}
+# In ui.R
+fluidRow(
+  column(3,
+    radioButtons("continuous_variable", "Select Continuous Variable:",
+                 choices = list("Age" = "AGE", "Hours per Week" = "HOURS_PER_WEEK"),
+                 selected = "AGE")
+  ),
+  column(3,
+    radioButtons("graph_type", "Select Graph Type:",
+                 choices = list("Histogram" = "histogram", "Boxplot" = "boxplot"),
+                 selected = "histogram")
+  ),
+  column(6, plotOutput("p1"))
+)
+```
+
+## Task 4: Categorical Variables Plotting (2 pts)
+
+Radio buttons for selecting categorical variables and chart types.
+
+```{r task4-code, eval=FALSE}
+# In ui.R
+fluidRow(
+  column(3,
+    radioButtons("categorical_variable", "Select Categorical Variable:",
+                 choices = list("Education" = "EDUCATION", 
+                               "Workclass" = "WORKCLASS", 
+                               "Sex" = "SEX"),
+                 selected = "EDUCATION")
+  ),
+  column(3,
+    radioButtons("chart_type", "Select Chart Type:",
+                 choices = list("Faceted Bar Chart" = "faceted", 
+                               "Stacked Bar Chart" = "stacked"),
+                 selected = "faceted")
+  ),
+  column(6, plotOutput("p2"))
+)
+```
+
+## Task 5: Server Logic for Continuous Variables (4 pts)
+
+Server-side logic for generating histograms and boxplots.
+
+```{r task5-server, eval=FALSE}
+# In server.R
+output$p1 <- renderPlot({
+  # Filter data by selected country
+  filtered_data <- df[df$NATIVE_COUNTRY == input$country, ]
+  
+  if(input$graph_type == "histogram") {
+    # Create histogram
+    ggplot(filtered_data, aes_string(x = input$continuous_variable, fill = "PREDICTION")) +
+      geom_histogram(bins = 30, alpha = 0.7, position = "identity") +
+      facet_wrap(~PREDICTION) +
+      labs(title = paste("Histogram of", input$continuous_variable, "by Prediction"),
+           x = input$continuous_variable, y = "Frequency") +
+      theme_minimal() +
+      scale_fill_brewer(type = "qual", palette = "Set1")
+  } else {
+    # Create boxplot
+    ggplot(filtered_data, aes_string(x = "PREDICTION", y = input$continuous_variable, fill = "PREDICTION")) +
+      geom_boxplot(alpha = 0.7) +
+      labs(title = paste("Boxplot of", input$continuous_variable, "by Prediction"),
+           x = "Prediction", y = input$continuous_variable) +
+      theme_minimal() +
+      scale_fill_brewer(type = "qual", palette = "Set1")
+  }
+})
+```
+
+## Task 6: Server Logic for Categorical Variables (6 pts)
+
+Server-side logic for generating faceted and stacked bar charts.
+
+```{r task6-server, eval=FALSE}
+# In server.R
+output$p2 <- renderPlot({
+  # Filter data by selected country
+  filtered_data <- df[df$NATIVE_COUNTRY == input$country, ]
+  
+  if(input$chart_type == "faceted") {
+    # Create faceted bar chart
+    ggplot(filtered_data, aes_string(x = input$categorical_variable, fill = input$categorical_variable)) +
+      geom_bar(alpha = 0.7) +
+      facet_wrap(~PREDICTION) +
+      labs(title = paste("Faceted Bar Chart of", input$categorical_variable, "by Prediction"),
+           x = input$categorical_variable, y = "Count") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      scale_fill_brewer(type = "qual", palette = "Set3")
+  } else {
+    # Create stacked bar chart
+    ggplot(filtered_data, aes_string(x = input$categorical_variable, fill = "PREDICTION")) +
+      geom_bar(alpha = 0.7) +
+      labs(title = paste("Stacked Bar Chart of", input$categorical_variable, "by Prediction"),
+           x = input$categorical_variable, y = "Count") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      scale_fill_brewer(type = "qual", palette = "Set1")
+  }
+})
+```
+
+## Task 7: Dashboard Customization (3 pts)
+
+The dashboard includes:
+- Professional styling with `theme_minimal()`
+- Color schemes using `scale_fill_brewer()`
+- Proper labels and titles
+- Responsive layout with `fluidRow` and `column`
+
+# Running the Application
+
+To run the Shiny application:
+
+```{r run-app, eval=FALSE}
+# Method 1: Using the run_app.R script
+source("run_app.R")
+
+# Method 2: Direct execution
+shiny::runApp(list(ui = ui, server = server), port = 3838)
+```
+
+# Screenshot Requirements
+
+The following screenshots need to be captured for submission:
+
+1. **Task 1**: Dashboard with application title
+2. **Task 2**: Country selection dropdown functionality
+3. **Task 3**: Age boxplot and Hours per Week histogram
+4. **Task 4**: Workclass faceted bar chart and Education stacked bar chart
+5. **Task 5**: Both continuous variable visualizations
+6. **Task 6**: Both categorical variable visualizations
+7. **Task 7**: Final dashboard with a non-US country selected
+
+# Conclusion
+
+This Shiny dashboard successfully implements all required tasks for exploring census data. The interactive features allow users to:
+
+- Select different countries for analysis
+- Choose between continuous variables (Age, Hours per Week)
+- Switch between visualization types (Histogram, Boxplot)
+- Explore categorical variables (Education, Workclass, Sex)
+- View data in different chart formats (Faceted, Stacked)
+
+The dashboard provides valuable insights for targeting advertising demographics based on census data patterns.
