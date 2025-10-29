@@ -1,0 +1,243 @@
+---
+title: "Project 4: Canadian Agri Market Insights — Notebook"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = TRUE, warning = FALSE)
+required_pkgs <- c("DBI", "RSQLite", "readr", "dplyr")
+for (p in required_pkgs) {
+  if (!requireNamespace(p, quietly = TRUE)) {
+    install.packages(p, repos = "https://cloud.r-project.org")
+  }
+  suppressPackageStartupMessages(library(p, character.only = TRUE))
+}
+project_dir <- getwd()
+db_path <- file.path(project_dir, "FinalDB.sqlite")
+if (file.exists(db_path)) file.remove(db_path)
+conn <- DBI::dbConnect(RSQLite::SQLite(), db_path)
+```
+
+<div id="problem-01">
+
+## Problem 1. Create Tables
+
+Create the following tables in SQLite: `CROP_DATA`, `FARM_PRICES`, `DAILY_FX`, `MONTHLY_FX`.
+
+```{r problem1}
+# Explicit DDL to create empty tables
+DBI::dbExecute(conn, "CREATE TABLE IF NOT EXISTS CROP_DATA (
+  CD_ID INTEGER,
+  YEAR TEXT,
+  CROP_TYPE TEXT,
+  GEO TEXT,
+  SEEDED_AREA INTEGER,
+  HARVESTED_AREA INTEGER,
+  PRODUCTION INTEGER,
+  AVG_YIELD INTEGER
+)")
+
+DBI::dbExecute(conn, "CREATE TABLE IF NOT EXISTS FARM_PRICES (
+  CD_ID INTEGER,
+  DATE TEXT,
+  CROP_TYPE TEXT,
+  GEO TEXT,
+  PRICE_PRERMT REAL
+)")
+
+DBI::dbExecute(conn, "CREATE TABLE IF NOT EXISTS DAILY_FX (
+  DFX_ID INTEGER,
+  DATE TEXT,
+  FXUSDCAD REAL
+)")
+
+DBI::dbExecute(conn, "CREATE TABLE IF NOT EXISTS MONTHLY_FX (
+  DFX_ID INTEGER,
+  DATE TEXT,
+  FXUSDCAD REAL
+)")
+
+# Show confirmation of created tables
+DBI::dbListTables(conn)
+```
+
+</div>
+
+<div id="problem-02">
+
+## Problem 2. Read Datasets and Load Tables
+
+Read CSVs and load into the created tables.
+
+```{r problem2}
+crop_df <- readr::read_csv(file.path(project_dir, "Annual_Crop_Data.csv"), show_col_types = FALSE)
+farm_df <- readr::read_csv(file.path(project_dir, "Monthly_Farm_Prices.csv"), show_col_types = FALSE)
+daily_fx_df <- readr::read_csv(file.path(project_dir, "Daily_FX.csv"), show_col_types = FALSE)
+monthly_fx_df <- readr::read_csv(file.path(project_dir, "Monthly_FX.csv"), show_col_types = FALSE)
+
+DBI::dbWriteTable(conn, "CROP_DATA", crop_df, append = TRUE)
+DBI::dbWriteTable(conn, "FARM_PRICES", farm_df, append = TRUE)
+DBI::dbWriteTable(conn, "DAILY_FX", daily_fx_df, append = TRUE)
+DBI::dbWriteTable(conn, "MONTHLY_FX", monthly_fx_df, append = TRUE)
+
+# Show brief confirmation (row counts)
+list(
+  CROP_DATA = DBI::dbGetQuery(conn, "SELECT COUNT(*) AS rows FROM CROP_DATA"),
+  FARM_PRICES = DBI::dbGetQuery(conn, "SELECT COUNT(*) AS rows FROM FARM_PRICES"),
+  DAILY_FX = DBI::dbGetQuery(conn, "SELECT COUNT(*) AS rows FROM DAILY_FX"),
+  MONTHLY_FX = DBI::dbGetQuery(conn, "SELECT COUNT(*) AS rows FROM MONTHLY_FX")
+)
+```
+
+</div>
+
+<div id="problem-03">
+
+## Problem 3. Count FARM_PRICES Records
+
+```{r problem3}
+DBI::dbGetQuery(conn, "SELECT COUNT(*) AS record_count FROM FARM_PRICES;")
+```
+
+</div>
+
+<div id="problem-04">
+
+## Problem 4. Geographies in FARM_PRICES
+
+```{r problem4}
+DBI::dbGetQuery(conn, "SELECT DISTINCT GEO FROM FARM_PRICES ORDER BY GEO;")
+```
+
+</div>
+
+<div id="problem-05">
+
+## Problem 5. Rye harvested in Canada (1968)
+
+```{r problem5}
+DBI::dbGetQuery(conn, "SELECT HARVESTED_AREA FROM CROP_DATA
+   WHERE CROP_TYPE = 'Rye' AND GEO = 'Canada' AND SUBSTR(YEAR,1,4) = '1968';")
+```
+
+</div>
+
+<div id="problem-06">
+
+## Problem 6. First 6 FARM_PRICES rows for Rye
+
+```{r problem6}
+DBI::dbGetQuery(conn, "SELECT * FROM FARM_PRICES
+   WHERE CROP_TYPE = 'Rye'
+   ORDER BY DATE ASC
+   LIMIT 6;")
+```
+
+</div>
+
+<div id="problem-07">
+
+## Problem 7. Provinces that grew Barley
+
+```{r problem7}
+DBI::dbGetQuery(conn, "SELECT DISTINCT GEO FROM CROP_DATA
+   WHERE CROP_TYPE = 'Barley' AND GEO <> 'Canada'
+   ORDER BY GEO;")
+```
+
+</div>
+
+<div id="problem-08">
+
+## Problem 8. First and last FARM_PRICES dates
+
+```{r problem8}
+DBI::dbGetQuery(conn, "SELECT MIN(DATE) AS first_date, MAX(DATE) AS last_date FROM FARM_PRICES;")
+```
+
+</div>
+
+<div id="problem-09">
+
+## Problem 9. Crops with PRICE_PRERMT >= 350
+
+```{r problem9}
+DBI::dbGetQuery(conn, "SELECT DISTINCT CROP_TYPE FROM FARM_PRICES
+   WHERE PRICE_PRERMT >= 350
+   ORDER BY CROP_TYPE;")
+```
+
+</div>
+
+<div id="problem-10">
+
+## Problem 10. Saskatchewan crop types (year 2000) ranked by average yield
+
+```{r problem10}
+res10 <- DBI::dbGetQuery(conn, "SELECT CROP_TYPE, AVG(AVG_YIELD) AS avg_yield
+   FROM CROP_DATA
+   WHERE TRIM(GEO) = 'Saskatchewan' AND CAST(SUBSTR(YEAR,1,4) AS INTEGER) = 2000
+   GROUP BY CROP_TYPE
+   ORDER BY avg_yield DESC;")
+res10
+cat("\nBest performing crop (2000, Saskatchewan): ", if (nrow(res10) > 0) res10$CROP_TYPE[1] else "<none>")
+```
+
+</div>
+
+<div id="problem-11">
+
+## Problem 11. Average yield by crop and geography since 2000
+
+```{r problem11}
+res11 <- DBI::dbGetQuery(conn, "SELECT CROP_TYPE, GEO, AVG(AVG_YIELD) AS avg_yield
+   FROM CROP_DATA
+   WHERE CAST(SUBSTR(YEAR,1,4) AS INTEGER) >= 2000
+   GROUP BY CROP_TYPE, GEO
+   ORDER BY avg_yield DESC;")
+head(res11, 12)
+cat("\nTop since 2000: ", if (nrow(res11) > 0) paste(res11$CROP_TYPE[1], "-", res11$GEO[1]) else "<none>")
+```
+
+</div>
+
+<div id="problem-12">
+
+## Problem 12. Most recent wheat harvested area in Canada (subquery)
+
+```{r problem12}
+DBI::dbGetQuery(conn, "SELECT HARVESTED_AREA FROM CROP_DATA
+   WHERE CROP_TYPE = 'Wheat' AND GEO = 'Canada' AND YEAR = (
+     SELECT MAX(YEAR) FROM CROP_DATA WHERE CROP_TYPE = 'Wheat' AND GEO = 'Canada'
+   );")
+```
+
+</div>
+
+<div id="problem-13">
+
+## Problem 13. Canola prices in Saskatchewan (CAD & USD), recent 6 months
+
+```{r problem13}
+DBI::dbGetQuery(conn, "SELECT fp.DATE,
+          fp.CROP_TYPE,
+          fp.GEO,
+          fp.PRICE_PRERMT AS price_cad,
+          (fp.PRICE_PRERMT / fx.FXUSDCAD) AS price_usd
+   FROM FARM_PRICES fp, MONTHLY_FX fx
+   WHERE fp.DATE = fx.DATE
+     AND fp.CROP_TYPE = 'Canola'
+     AND fp.GEO = 'Saskatchewan'
+   ORDER BY fp.DATE DESC
+   LIMIT 6;")
+```
+
+</div>
+
+```{r teardown, include=FALSE}
+DBI::dbDisconnect(conn)
+```
