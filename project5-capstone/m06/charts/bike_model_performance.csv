@@ -1,0 +1,9 @@
+Model,R_squared,RMSE
+Weather Only,0.4389,474.6247
+All Variables,0.6690,364.4235
+Polynomial,0.5754,415.2086
+Interaction,0.6016,402.1833
+Polynomial + Interaction,0.6168,394.4072
+Ridge Regression,0.5468,428.9222
+Lasso Regression,0.5473,428.6227
+Elastic Net,0.5474,428.5443

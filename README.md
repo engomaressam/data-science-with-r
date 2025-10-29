@@ -1,43 +1,54 @@
-# Data Science with R — Portfolio Projects
+# Data Science with R — Portfolio (5 Featured Projects)
 
-This repository showcases several end-to-end data science projects implemented in R (and a Shiny dashboard). It is structured for clarity and ease of review by employers and collaborators.
+Polished, employer-ready portfolio demonstrating practical data science using R, Shiny, SQL, and reproducible reporting. Each project includes a short description, how to run, and curated artifacts (figures, reports, and dashboards).
 
-## Projects
+## Projects at a Glance
 
-- `project1-covid-analysis`
-  - Web-scraping, cleaning, EDA, and ratio analysis on COVID-19 data.
-  - How to run: open `final_jupyter_covid19.ipynb` or run `covid19_analysis.R`.
+- `project1-covid-analysis` — Web scrape, clean, and analyze COVID-19 data; ratio analyses and comparative EDA. Run `covid19_analysis.R` or open `final_jupyter_covid19.ipynb`.
+- `project2-weather-analysis` — NOAA weather EDA and regression modeling; model comparison with train/test RMSE. Run `weather_analysis_complete.R`.
+- `project3-shiny-dashboard` — Interactive census Shiny dashboard with plots, tables, and downloads. Launch with `Rscript project3-shiny-dashboard/run_app.R`.
+- `project4-canada-agri-analysis` — Canadian agriculture and FX metrics with SQL and RSQLite; automated report. Run `Rscript project4-canada-agri-analysis/solve_project4.R`.
+- `project5-capstone` — Bike-sharing demand prediction + Shiny dashboard; presentation deck in `m06/capstone_presentation.pdf`.
 
-- `project2-weather-analysis`
-  - NOAA weather EDA and regression modeling in R.
-  - How to run: open `IBM-DS-with-R-2-Data-Analysis-with-R.ipynb` or run `weather_analysis_complete.R`.
+## Highlights
 
-- `project3-shiny-dashboard`
-  - Interactive census dashboard built with Shiny.
-  - How to run: `Rscript project3-shiny-dashboard/run_app.R` then open the local URL printed.
-
-- `project4-canada-agri-analysis`
-  - Canadian crop production and pricing analysis with RSQLite and SQL.
-  - How to run: `Rscript project4-canada-agri-analysis/solve_project4.R` (creates DB, loads data, executes all queries).
-
-## Repository Layout
-
-- `docs/` — setup guides, lab notebooks, and submission references
-- `scripts/setup/` — helper scripts to configure the R kernel and environment
-- Per-project folders — code, data, and artifacts scoped to each project
-
-## Prerequisites
-
-- R (>= 4.2) and `Rscript` available in PATH
-- Recommended R packages will be auto-installed by the scripts if missing
+- End-to-end pipelines: data collection → cleaning → EDA → modeling → reporting.
+- Reproducible runs via `Rscript` entry points in each project.
+- Interactive Shiny app (Projects 3 and 5) with leaflet maps and dynamic plots.
+- Professional slide deck (Beamer PDF) for the capstone: `project5-capstone/m06/capstone_presentation.pdf`.
+- Alternative deck prompt for Manus AI: `project5-capstone/m06/manus_ai_prompt.md` with chart-ready CSVs in `m06/charts/`.
 
 ## Quick Start
 
-1. Clone the repo: `git clone https://github.com/engomaressam/data-science-with-r.git`
-2. Navigate to the repo: `cd data-science-with-r`
-3. Run a project (example Project 4): `Rscript project4-canada-agri-analysis/solve_project4.R`
+Prerequisites: R (>= 4.3) available on your PATH.
 
-## Notes
+- Install common packages (optional): see `project2-weather-analysis/install_packages.R` and `project5-capstone/m04/install_packages.R`.
+- Example runs:
+  - Project 2 (Weather): `Rscript project2-weather-analysis/weather_analysis_complete.R`
+  - Project 3 (Shiny): `Rscript project3-shiny-dashboard/run_app.R` → open the printed `http://localhost:<port>`
+  - Project 5 (Capstone Shiny): `Rscript project5-capstone/m05/run_app.R` → `http://localhost:3838`
 
-- Large binaries, temporary artifacts, and local databases are ignored via `.gitignore`.
-- Each project folder is self-contained with data and runnable code.
+## Portfolio Screenshots
+
+- Project 2 EDA: `project2-weather-analysis/eda_temperature.png`, `eda_wind_speed.png`
+- Project 3 Dashboard: `project3-shiny-dashboard/screenshots/task7_data_table.png`
+- Project 5 Model Diagnostics: `project5-capstone/m04/diagnostic_plots_best_model.png`
+
+## Repository Layout
+
+- `project1-covid-analysis/` — COVID EDA and analysis (README included)
+- `project2-weather-analysis/` — NOAA EDA and modeling (README included)
+- `project3-shiny-dashboard/` — Shiny census dashboard
+- `project4-canada-agri-analysis/` — Agriculture and FX analysis (README included)
+- `project5-capstone/` — Bike-sharing capstone with Shiny + deck
+- `scripts/setup/` — optional helpers to configure R kernel and PATH
+- `docs/` — lab guides and submission references
+
+## About
+
+Author: Omar Essam
+Focus: Practical analytics, clean code, and clear communication.
+
+## License & Contributions
+
+This is a personal portfolio. Feel free to explore and reference; contributions via PRs are welcome if they improve clarity or reproducibility.
