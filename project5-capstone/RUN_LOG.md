@@ -5,7 +5,7 @@ Date: Auto-generated during this session.
 ## Summary
 - Webscraping completed: `output/bike_sharing_systems.csv` created (915 rows).
 - Downloads completed: `data/raw_worldcities.csv` and `data/raw_seoul_bike_sharing.csv` saved.
-- OpenWeather run skipped: `OPENWEATHER_API_KEY` not set; created empty `output/cities_weather_forecast.csv`.
+- OpenWeather run attempted: API key set, but requests returned 401 (activation pending); `output/cities_weather_forecast.csv` remains empty until key is active.
 
 ## Commands Executed
 - `Rscript project5-capstone/scripts/data_collection_webscrape.R`
@@ -15,7 +15,7 @@ Date: Auto-generated during this session.
 ## Artifacts
 - Outputs:
   - `output/bike_sharing_systems.csv` (182,844 bytes)
-  - `output/cities_weather_forecast.csv` (0 bytes – set API key to populate)
+  - `output/cities_weather_forecast.csv` (0 bytes – API key activation required)
 - Data:
   - `data/raw_worldcities.csv` (2.5 MB)
   - `data/raw_seoul_bike_sharing.csv` (581 KB)
@@ -25,7 +25,7 @@ Date: Auto-generated during this session.
   - `output/run_logs/data_collection_openweather.log`
 
 ## Next Steps
-- Set `OPENWEATHER_API_KEY` in your environment and re-run the OpenWeather script:
-  - PowerShell (persist): `setx OPENWEATHER_API_KEY "<your_key>"`
-  - PowerShell (current session): `$env:OPENWEATHER_API_KEY = "<your_key>"`
+- Confirm OpenWeather account email and wait ~10 minutes for key activation.
+- Test in browser: `https://api.openweathermap.org/data/2.5/weather?q=Seoul&appid=<your_key>` (should return JSON, not 401).
+- Re-run `Rscript project5-capstone/scripts/data_collection_openweather.R` to populate forecasts.
 - Proceed with data wrangling and EDA for the collected datasets.
