@@ -103,7 +103,7 @@ run_query(
   "Problem 10: Saskatchewan 2000 crop types ranked by average yield",
   "SELECT CROP_TYPE, AVG(AVG_YIELD) AS avg_yield
    FROM CROP_DATA
-   WHERE GEO = 'Saskatchewan' AND SUBSTR(YEAR,1,4) = '2000'
+   WHERE TRIM(GEO) = 'Saskatchewan' AND CAST(SUBSTR(YEAR,1,4) AS INTEGER) = 2000
    GROUP BY CROP_TYPE
    ORDER BY avg_yield DESC;"
 )
