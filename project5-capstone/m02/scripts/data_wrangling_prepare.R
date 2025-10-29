@@ -64,7 +64,7 @@ std_names <- function(nms) {
 
 remove_refs <- function(x) {
   # Remove patterns like [12], [abc]
-  x <- str_replace_all(x, "\\\\[[A-Za-z0-9]+\\\\]", " ")
+  x <- str_replace_all(x, "\\[[^\\]]+\\]", " ")
   x <- str_squish(x)
   x
 }
