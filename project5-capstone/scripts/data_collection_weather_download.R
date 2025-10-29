@@ -88,11 +88,18 @@ fetch_current <- function(city) {
   }
   dat <- httr::content(resp, as = "text", encoding = "UTF-8")
   j <- jsonlite::fromJSON(dat)
+  # Robustly extract weather fields whether jsonlite produces a data.frame or list-of-lists
+  w_main <- tryCatch({
+    if (is.data.frame(j$weather)) j$weather$main[[1]] %||% NA_character_ else j$weather[[1]]$main %||% NA_character_
+  }, error = function(e) NA_character_)
+  w_desc <- tryCatch({
+    if (is.data.frame(j$weather)) j$weather$description[[1]] %||% NA_character_ else j$weather[[1]]$description %||% NA_character_
+  }, error = function(e) NA_character_)
   tibble(
     city = city,
     dt = as_datetime(j$dt, tz = "UTC"),
-    weather_main = j$weather[[1]]$main %||% NA_character_,
-    weather_desc = j$weather[[1]]$description %||% NA_character_,
+    weather_main = w_main,
+    weather_desc = w_desc,
     temp = j$main$temp %||% NA_real_,
     temp_min = j$main$temp_min %||% NA_real_,
     temp_max = j$main$temp_max %||% NA_real_,
@@ -123,11 +130,20 @@ fetch_forecast <- function(city) {
   if (!"list" %in% names(j)) return(NULL)
   purrr::map_dfr(seq_len(nrow(j$list)), function(i) {
     row <- j$list[i,]
+    # Robustly extract nested weather fields for each forecast row
+    wm <- tryCatch({
+      w <- row$weather[[1]]
+      if (is.data.frame(w)) w$main[[1]] %||% NA_character_ else w[[1]]$main %||% NA_character_
+    }, error = function(e) NA_character_)
+    wd <- tryCatch({
+      w <- row$weather[[1]]
+      if (is.data.frame(w)) w$description[[1]] %||% NA_character_ else w[[1]]$description %||% NA_character_
+    }, error = function(e) NA_character_)
     tibble(
       city = city,
       forecast_dt = as_datetime(row$dt, tz = "UTC"),
-      weather_main = row$weather[[1]]$main %||% NA_character_,
-      weather_desc = row$weather[[1]]$description %||% NA_character_,
+      weather_main = wm,
+      weather_desc = wd,
       temp = row$main$temp %||% NA_real_,
       temp_min = row$main$temp_min %||% NA_real_,
       temp_max = row$main$temp_max %||% NA_real_,
