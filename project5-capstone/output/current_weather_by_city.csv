@@ -1,0 +1,8 @@
+city,dt,weather_main,weather_desc,temp,temp_min,temp_max,pressure,humidity,wind_speed,wind_deg,visibility,clouds
+Seoul,2025-10-29T10:01:17Z,Clear,clear sky,13.76,12.78,13.76,1027,67,2.06,290,10000,0
+Washington D.C.,2025-10-29T09:59:23Z,Clouds,overcast clouds,9.39,8.23,10.1,1019,74,4.12,30,10000,100
+Paris,2025-10-29T09:53:27Z,Clear,clear sky,12.73,11.7,13.45,1004,87,2.57,150,10000,0
+Suzhou,2025-10-29T09:58:15Z,Clouds,overcast clouds,18.68,18.68,18.68,1023,54,3.99,127,10000,93
+Toronto,2025-10-29T10:03:04Z,Clear,clear sky,4.24,3.01,5.66,1024,78,10.28,60,10000,0
+New York,2025-10-29T09:58:11Z,Clouds,overcast clouds,9.41,8.44,10.12,1021,71,6.26,88,10000,100
+London,2025-10-29T09:56:59Z,Rain,light rain,12.85,11.95,13.38,1000,83,3.09,220,10000,100
