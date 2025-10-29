@@ -52,7 +52,8 @@ This capstone demonstrates a complete, production‑style workflow in R — from
   - Tabbed diagnostics and downloadable predictions.
 
 ### 5) Present results
-- Enter `m06/` and render: `R -e "rmarkdown::render('capstone_presentation.Rmd')"`
+- Standard slides: Enter `m06/` and render: `R -e "rmarkdown::render('capstone_presentation.Rmd')"`
+- AI‑grading slides: Enter `m06/` and run: `./build_presentation.ps1` (Windows PowerShell) to render `capstone_presentation_ai_grading.Rmd` to PDF.
 - Or use Manus AI with `manus_ai_prompt.md` and CSVs in `m06/charts/`.
 
 ## Key Artifacts
@@ -62,6 +63,7 @@ This capstone demonstrates a complete, production‑style workflow in R — from
 - `m04/diagnostic_plots_best_model.png` — residuals & influence.
 - `m05/` Shiny app (`ui.R`, `server.R`, `run_app.R`).
 - `m06/capstone_presentation.pdf` — beamer slides ready to share.
+- `m06/capstone_presentation_ai_grading.pdf` — slides tailored to the AI rubric.
 - `m06/charts/*.csv` — chart‑ready datasets for Manus AI.
 
 ## Highlights
