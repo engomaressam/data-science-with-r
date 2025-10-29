@@ -59,3 +59,9 @@ desktop.ini
 # Project temp folders
 /tmp/
 **/tmp/
+
+# Databases & local storage
+*.sqlite
+*.db
+**/FinalDB.sqlite
+**/.Rproj
