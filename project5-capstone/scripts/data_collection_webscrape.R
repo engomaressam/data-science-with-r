@@ -48,4 +48,3 @@ readr::write_csv(df, out_csv)
 log("Saved ", nrow(df), " rows to ", out_csv)
 
 log("Webscrape completed successfully")
-
